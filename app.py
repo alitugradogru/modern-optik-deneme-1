@@ -3,13 +3,11 @@ import streamlit as st
 # --- 1. AYARLAR & HAFIZA ---
 st.set_page_config(page_title="Modern Optik | Özel Koleksiyon", page_icon="🕶️", layout="wide", initial_sidebar_state="collapsed")
 
-# Hafızada sepeti ve "şu an hangi sayfadayız" bilgisini tutuyoruz
 if 'sepet' not in st.session_state:
     st.session_state.sepet = []
 if 'aktif_sayfa' not in st.session_state:
     st.session_state.aktif_sayfa = "vitrin"
 
-# Sayfa değiştirme fonksiyonları
 def sayfaya_git(sayfa_adi):
     st.session_state.aktif_sayfa = sayfa_adi
 
@@ -28,12 +26,10 @@ st.markdown("""
 [data-testid="stAppViewContainer"], .stApp { background-color: #FFFFFF !important; color: #000 !important; font-family: 'Jost', sans-serif; }
 header {visibility: hidden;} footer {visibility: hidden;}
 
-/* Üst Menü */
 .navbar { display: flex; justify-content: space-between; align-items: center; padding: 25px 60px; border-bottom: 1px solid #f0f0f0; margin-bottom: 40px;}
 .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.8rem; letter-spacing: 4px; text-transform: uppercase; font-weight: 500;}
 .nav-links { font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; color: #555; display: flex; gap: 30px; align-items: center;}
 
-/* Vitrin Görselleri */
 [data-testid="stVerticalBlock"] > [style*="flex-direction: column;"] > [data-testid="stVerticalBlock"] { background: transparent !important; border: none !important; padding: 10px; }
 img { width: 100%; object-fit: contain; mix-blend-mode: multiply; transition: transform 0.6s ease;}
 img:hover { transform: scale(1.02); }
@@ -42,11 +38,9 @@ img:hover { transform: scale(1.02); }
 .u-desc { font-size: 0.85rem; text-align: center; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;}
 .u-fiyat { font-size: 1.1rem; text-align: center; color: #000; font-weight: 400; margin-top: 15px; margin-bottom: 25px;}
 
-/* Genel Butonlar */
 .stButton > button { width: 100%; border-radius: 0px !important; font-weight: 400; letter-spacing: 2px; color: #000 !important; background-color: transparent !important; border: 1px solid #000; padding: 12px; transition: all 0.3s ease; }
 .stButton > button:hover { background-color: #000 !important; color: #fff !important; }
 
-/* Sepet Sayfası Özel Stiller */
 .sepet-baslik { font-family: 'Playfair Display', serif; font-size: 2.5rem; text-align: center; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px;}
 .sepet-ozet-kutu { background-color: #FAFAFA; padding: 40px; border: 1px solid #EAEAEA; }
 .ozet-satir { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.1rem; color: #555;}
@@ -70,10 +64,8 @@ with col_nav3:
 
 st.markdown("<hr style='margin-top: -15px; margin-bottom: 40px; border: none; border-bottom: 1px solid #eaeaea;'>", unsafe_allow_html=True)
 
-# --- 4. SAYFA YÖNLENDİRİCİSİ (ROUTING) ---
-
+# --- 4. SAYFA YÖNLENDİRİCİSİ ---
 if st.session_state.aktif_sayfa == "vitrin":
-    # --- VİTRİN SAYFASI ---
     st.markdown('<img src="https://images.unsplash.com/photo-1589642380614-4a8c2147b857?auto=format&fit=crop&w=2000&q=80" style="width:100%; height:50vh; object-fit:cover; margin-bottom:50px;">', unsafe_allow_html=True)
     
     LUK_URUNLER = [
@@ -96,7 +88,6 @@ if st.session_state.aktif_sayfa == "vitrin":
                 st.rerun()
 
 elif st.session_state.aktif_sayfa == "sepet":
-    # --- SEPET (CHECKOUT) SAYFASI ---
     st.markdown('<div class="sepet-baslik">Alışveriş Çantanız</div>', unsafe_allow_html=True)
     
     if len(st.session_state.sepet) == 0:
@@ -133,4 +124,7 @@ elif st.session_state.aktif_sayfa == "sepet":
             st.markdown('<div class="ozet-satir"><span>Kargo (Sigortalı)</span><span>Ücretsiz</span></div>', unsafe_allow_html=True)
             st.markdown('<div class="ozet-toplam"><span>Genel Toplam</span><span>{:,.0f} TL</span></div>'.format(toplam_tutar).replace(",", "."), unsafe_allow_html=True)
             
-            if
+            if st.button("GÜVENLİ ÖDEMEYİ TAMAMLA"):
+                st.success("Tebrikler! Müşteri bu aşamada kredi kartı ekranına yönlendirilecektir.")
+                st.session_state.sepet = []
+            st.markdown('</div>', unsafe_allow_html=True)
