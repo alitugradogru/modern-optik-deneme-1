@@ -47,6 +47,10 @@ header {visibility: hidden;}
 .u-fiyat { font-family: 'Jost', sans-serif; font-size: 1.2rem; text-align: center; color: #000; font-weight: 600; margin-top: 10px; margin-bottom: 20px;}
 img { transition: transform 0.3s ease; } img:hover { transform: scale(1.02); }
 
+/* BÜYÜTME (FULLSCREEN) İKONUNU KÖKÜNDEN YOK ETME KOMUTU */
+button[title="View fullscreen"] { display: none !important; }
+[data-testid="StyledFullScreenButton"] { display: none !important; }
+
 /* Menü Butonları Tıklanabilir Şeffaf Stil */
 .stButton > button { background-color: transparent !important; border: none !important; color: #000 !important; font-size: 1rem !important; font-weight: 600 !important; font-family: 'Jost', sans-serif; }
 .stButton > button:hover { opacity: 0.6; }
