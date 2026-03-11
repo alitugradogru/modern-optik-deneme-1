@@ -5,7 +5,6 @@ st.set_page_config(page_title="Modern Optik", page_icon="🕶️", layout="wide"
 
 if 'sepet' not in st.session_state:
     st.session_state.sepet = []
-# Site ilk açıldığında doğrudan "ana_sayfa"ya yönlendiriyoruz
 if 'aktif_sayfa' not in st.session_state:
     st.session_state.aktif_sayfa = "ana_sayfa" 
 if 'secili_marka' not in st.session_state:
@@ -48,22 +47,27 @@ header {visibility: hidden;}
 .u-fiyat { font-family: 'Jost', sans-serif; font-size: 1.2rem; text-align: center; color: #000; font-weight: 600; margin-top: 10px; margin-bottom: 20px;}
 img { transition: transform 0.3s ease; } img:hover { transform: scale(1.02); }
 
-/* Logo Butonu İçin Özel CSS (Tıklanabilir olması için) */
-.logo-btn > .stButton > button { background-color: transparent !important; border: none !important; color: #000 !important; font-size: 1.5rem !important; font-weight: 600 !important; font-family: 'Jost', sans-serif; padding-top: 0px !important;}
-.logo-btn > .stButton > button:hover { opacity: 0.6; }
+/* Menü Butonları Tıklanabilir Şeffaf Stil */
+.stButton > button { background-color: transparent !important; border: none !important; color: #000 !important; font-size: 1rem !important; font-weight: 600 !important; font-family: 'Jost', sans-serif; }
+.stButton > button:hover { opacity: 0.6; }
+button[kind="primary"] { background-color: #000 !important; color: #fff !important; width: 100%; font-weight: 600 !important;}
+button[kind="primary"]:hover { opacity: 0.8; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. ÜST MENÜ VE TIKLANABİLİR LOGO (ANA SAYFA LİNKİ) ---
-col_logo, col_bosluk, col_btn1, col_btn2, col_btn3 = st.columns([2, 1, 1.5, 1.5, 1.5], vertical_alignment="center")
+# --- 4. ÜST MENÜ VE LOGO ---
+col_logo, col_bosluk, col_btn0, col_btn1, col_btn2, col_btn3 = st.columns([2.5, 0.5, 1.5, 1.5, 1.5, 1.5], vertical_alignment="center")
 
 with col_logo:
-    st.markdown('<div class="logo-btn">', unsafe_allow_html=True)
-    if st.button("MODERN OPTİK", use_container_width=True):
+    try:
+        st.image("modern-optik-v2a.png", width=180)
+    except:
+        st.error("Logoyu yükleyiniz.")
+
+with col_btn0:
+    if st.button("ANA SAYFA", use_container_width=True):
         sayfaya_git("ana_sayfa")
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
 with col_btn1:
     if st.button("TÜM GÖZLÜKLER", use_container_width=True): 
         sayfaya_git("vitrin", "Tümü")
@@ -86,12 +90,11 @@ st.markdown("""
 # --- 5. SAYFA MİMARİSİ ---
 
 if st.session_state.aktif_sayfa == "ana_sayfa":
-    # 1. SAF ANA SAYFA (FİLTRESİZ)
     st.markdown('<img src="https://images.unsplash.com/photo-1509695507497-903c140c43b0?auto=format&fit=crop&w=1200&q=80" style="width:100%; height:400px; object-fit:cover; margin-bottom:40px;">', unsafe_allow_html=True)
     st.markdown("<h3 style='text-align:center; font-family: \"Jost\", sans-serif;'>Trend Ürünler</h3><br>", unsafe_allow_html=True)
     
     cols = st.columns(3, gap="large")
-    for i, urun in enumerate(URUNLER[:3]): # Sadece 3 trend ürün
+    for i, urun in enumerate(URUNLER[:3]):
         with cols[i % 3]:
             st.image(urun["resim"])
             st.markdown('<div class="u-isim">{}</div>'.format(urun["marka"]), unsafe_allow_html=True)
@@ -103,7 +106,6 @@ if st.session_state.aktif_sayfa == "ana_sayfa":
                 st.rerun()
 
 elif st.session_state.aktif_sayfa == "vitrin":
-    # 2. VİTRİN / TÜM GÖZLÜKLER (FİLTRELİ ALAN)
     baslik = "Tüm Gözlükler" if st.session_state.secili_marka == "Tümü" else "{} Koleksiyonu".format(st.session_state.secili_marka)
     st.markdown("<h3 style='text-align:center;'>{}</h3><br>".format(baslik), unsafe_allow_html=True)
     
@@ -145,7 +147,6 @@ elif st.session_state.aktif_sayfa == "vitrin":
                     st.rerun()
 
 elif st.session_state.aktif_sayfa == "markalar":
-    # 3. MARKALAR SAYFASI
     st.markdown("<h3 style='text-align:center;'>Markalarımız</h3><br>", unsafe_allow_html=True)
     cols = st.columns(4, gap="large")
     for i, marka in enumerate(MARKALAR):
@@ -156,7 +157,6 @@ elif st.session_state.aktif_sayfa == "markalar":
                 st.rerun()
 
 elif st.session_state.aktif_sayfa == "sepet":
-    # 4. SEPET SAYFASI
     st.markdown("<h3 style='text-align:center;'>Sepetim</h3><br>", unsafe_allow_html=True)
     if len(st.session_state.sepet) == 0:
         st.info("Sepetinizde ürün bulunmamaktadır.")
