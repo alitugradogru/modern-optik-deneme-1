@@ -5,8 +5,9 @@ st.set_page_config(page_title="Modern Optik", page_icon="🕶️", layout="wide"
 
 if 'sepet' not in st.session_state:
     st.session_state.sepet = []
+# Site ilk açıldığında doğrudan "ana_sayfa"ya yönlendiriyoruz
 if 'aktif_sayfa' not in st.session_state:
-    st.session_state.aktif_sayfa = "vitrin"
+    st.session_state.aktif_sayfa = "ana_sayfa" 
 if 'secili_marka' not in st.session_state:
     st.session_state.secili_marka = "Tümü"
 
@@ -35,29 +36,33 @@ MARKALAR = [
     {"isim": "Ray-Ban", "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Ray-Ban_logo.svg/512px-Ray-Ban_logo.svg.png"}
 ]
 
-# --- 3. CSS (TEMİZ VE DENGELİ) ---
+# --- 3. CSS ---
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap');
 .block-container { padding-top: 2rem !important; max-width: 1200px !important; }
 header {visibility: hidden;}
 
-/* Ürün Yazıları */
 .u-isim { font-family: 'Jost', sans-serif; font-size: 1.1rem; text-align: center; margin-top: 15px; color: #000; font-weight: 600;}
 .u-desc { font-family: 'Jost', sans-serif; font-size: 0.85rem; text-align: center; color: #666; margin-top: 5px;}
 .u-fiyat { font-family: 'Jost', sans-serif; font-size: 1.2rem; text-align: center; color: #000; font-weight: 600; margin-top: 10px; margin-bottom: 20px;}
 img { transition: transform 0.3s ease; } img:hover { transform: scale(1.02); }
+
+/* Logo Butonu İçin Özel CSS (Tıklanabilir olması için) */
+.logo-btn > .stButton > button { background-color: transparent !important; border: none !important; color: #000 !important; font-size: 1.5rem !important; font-weight: 600 !important; font-family: 'Jost', sans-serif; padding-top: 0px !important;}
+.logo-btn > .stButton > button:hover { opacity: 0.6; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. DÜZGÜN HİZALANMIŞ MENÜ ---
+# --- 4. ÜST MENÜ VE TIKLANABİLİR LOGO (ANA SAYFA LİNKİ) ---
 col_logo, col_bosluk, col_btn1, col_btn2, col_btn3 = st.columns([2, 1, 1.5, 1.5, 1.5], vertical_alignment="center")
 
 with col_logo:
-    try:
-        st.image("modern-optik-v2a.png", width=200)
-    except:
-        st.error("Logoyu yükleyiniz.")
+    st.markdown('<div class="logo-btn">', unsafe_allow_html=True)
+    if st.button("MODERN OPTİK", use_container_width=True):
+        sayfaya_git("ana_sayfa")
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with col_btn1:
     if st.button("TÜM GÖZLÜKLER", use_container_width=True): 
@@ -72,18 +77,36 @@ with col_btn3:
         sayfaya_git("sepet")
         st.rerun()
 
-# --- 5. İNDİRİM ŞERİDİ ---
 st.markdown("""
-<div style="background-color: #000; color: #fff; text-align: center; padding: 10px 0; margin-top: 15px; margin-bottom: 30px; font-family: 'Jost', sans-serif; font-size: 14px;">
+<div style="background-color: #000; color: #fff; text-align: center; padding: 10px 0; margin-top: 5px; margin-bottom: 30px; font-family: 'Jost', sans-serif; font-size: 14px;">
     İlk Siparişinize Özel Sepette %10 İndirim
 </div>
 """, unsafe_allow_html=True)
 
-# --- 6. SAYFALAR ---
+# --- 5. SAYFA MİMARİSİ ---
 
-if st.session_state.aktif_sayfa == "vitrin":
+if st.session_state.aktif_sayfa == "ana_sayfa":
+    # 1. SAF ANA SAYFA (FİLTRESİZ)
+    st.markdown('<img src="https://images.unsplash.com/photo-1509695507497-903c140c43b0?auto=format&fit=crop&w=1200&q=80" style="width:100%; height:400px; object-fit:cover; margin-bottom:40px;">', unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; font-family: \"Jost\", sans-serif;'>Trend Ürünler</h3><br>", unsafe_allow_html=True)
     
-    # Filtre ve Sıralama Alanı
+    cols = st.columns(3, gap="large")
+    for i, urun in enumerate(URUNLER[:3]): # Sadece 3 trend ürün
+        with cols[i % 3]:
+            st.image(urun["resim"])
+            st.markdown('<div class="u-isim">{}</div>'.format(urun["marka"]), unsafe_allow_html=True)
+            st.markdown('<div class="u-desc">{} | {}</div>'.format(urun["model"], urun["cinsiyet"]), unsafe_allow_html=True)
+            st.markdown('<div class="u-fiyat">{:,} TL</div>'.format(urun["fiyat"]).replace(",", "."), unsafe_allow_html=True)
+            if st.button("SEPETE EKLE", key="ana_ekle_{}".format(urun['id']), type="primary", use_container_width=True):
+                sepete_ekle(urun)
+                st.toast("{} sepete eklendi!".format(urun['marka']))
+                st.rerun()
+
+elif st.session_state.aktif_sayfa == "vitrin":
+    # 2. VİTRİN / TÜM GÖZLÜKLER (FİLTRELİ ALAN)
+    baslik = "Tüm Gözlükler" if st.session_state.secili_marka == "Tümü" else "{} Koleksiyonu".format(st.session_state.secili_marka)
+    st.markdown("<h3 style='text-align:center;'>{}</h3><br>".format(baslik), unsafe_allow_html=True)
+    
     col_f1, col_f2 = st.columns(2)
     with col_f1:
         secili_cinsiyet = st.selectbox("Cinsiyet", ["Tümü", "Kadın", "Erkek", "Unisex"])
@@ -92,7 +115,6 @@ if st.session_state.aktif_sayfa == "vitrin":
     
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # Verileri Filtreleme
     gosterilecek_urunler = []
     for u in URUNLER:
         if st.session_state.secili_marka != "Tümü" and u["marka"] != st.session_state.secili_marka:
@@ -101,13 +123,11 @@ if st.session_state.aktif_sayfa == "vitrin":
             continue
         gosterilecek_urunler.append(u)
         
-    # Verileri Sıralama
     if sirala == "Fiyat: Düşükten Yükseğe":
         gosterilecek_urunler.sort(key=lambda x: x["fiyat"])
     elif sirala == "Fiyat: Yüksekten Düşüğe":
         gosterilecek_urunler.sort(key=lambda x: x["fiyat"], reverse=True)
 
-    # Vitrin Çizimi
     if len(gosterilecek_urunler) == 0:
         st.warning("Seçili filtrelere uygun ürün bulunmamaktadır.")
     else:
@@ -119,14 +139,14 @@ if st.session_state.aktif_sayfa == "vitrin":
                 st.markdown('<div class="u-desc">{} | {}</div>'.format(urun["model"], urun["cinsiyet"]), unsafe_allow_html=True)
                 st.markdown('<div class="u-fiyat">{:,} TL</div>'.format(urun["fiyat"]).replace(",", "."), unsafe_allow_html=True)
                 
-                if st.button("SEPETE EKLE", key="ekle_{}".format(urun['id']), type="primary", use_container_width=True):
+                if st.button("SEPETE EKLE", key="vitrin_ekle_{}".format(urun['id']), type="primary", use_container_width=True):
                     sepete_ekle(urun)
                     st.toast("{} sepete eklendi!".format(urun['marka']))
                     st.rerun()
 
 elif st.session_state.aktif_sayfa == "markalar":
+    # 3. MARKALAR SAYFASI
     st.markdown("<h3 style='text-align:center;'>Markalarımız</h3><br>", unsafe_allow_html=True)
-    
     cols = st.columns(4, gap="large")
     for i, marka in enumerate(MARKALAR):
         with cols[i % 4]:
@@ -136,6 +156,7 @@ elif st.session_state.aktif_sayfa == "markalar":
                 st.rerun()
 
 elif st.session_state.aktif_sayfa == "sepet":
+    # 4. SEPET SAYFASI
     st.markdown("<h3 style='text-align:center;'>Sepetim</h3><br>", unsafe_allow_html=True)
     if len(st.session_state.sepet) == 0:
         st.info("Sepetinizde ürün bulunmamaktadır.")
